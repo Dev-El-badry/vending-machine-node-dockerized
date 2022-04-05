@@ -4,7 +4,8 @@
   "description": "dockerize vending machine",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "ts-node-dev src/index.ts",
+    "test": "NODE_ENV=test jest --watchAll --no-cache"
   },
   "author": "",
   "license": "ISC",
@@ -12,6 +13,7 @@
     "@types/bcrypt": "^5.0.0",
     "@types/compression": "^1.7.2",
     "@types/cookie-parser": "^1.4.2",
+    "@types/cookie-session": "^2.0.44",
     "@types/helmet": "^4.0.0",
     "@types/hpp": "^0.2.2",
     "@types/jsonwebtoken": "^8.5.8",
@@ -21,6 +23,7 @@
     "compression": "^1.7.4",
     "concurrently": "^7.1.0",
     "cookie-parser": "^1.4.6",
+    "cookie-session": "^2.0.0",
     "dotenv": "^16.0.0",
     "express": "^4.17.3",
     "express-async-errors": "^3.1.1",
@@ -40,8 +43,8 @@
     "@types/jest": "^27.4.1",
     "@types/supertest": "^2.0.12",
     "jest": "^27.5.1",
-    "mongodb-memory-server": "^8.4.2",
-    "supertest": "^6.2.2",
+    "mongodb-memory-server": "^6.9.6",
+    "supertest": "^4.0.2",
     "ts-jest": "^27.1.4"
   }
 }

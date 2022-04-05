@@ -1,14 +1,19 @@
 import { MongoMemoryServer } from 'mongodb-memory-server';
 import mongoose from 'mongoose';
 import jwt from 'jsonwebtoken';
+import { keys } from '../../config/keys';
+import request from 'supertest';
+import { app } from '../../src/app';
 
 declare global {
-  var signin: () => string[];
+  var signin: () => any;
+  var signup: (role?: string, name?: string) => any;
 }
+
+// jest.mock('../nats-wrapper');
 
 let mongo: any;
 beforeAll(async () => {
-  process.env.JWT_KEY = 'my-secret-key';
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
   mongo = new MongoMemoryServer();
@@ -21,6 +26,7 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
+  // jest.clearAllMocks();
   const collections = await mongoose.connection.db.collections();
 
   for (let collection of collections) {
@@ -36,22 +42,24 @@ afterAll(async () => {
 global.signin = () => {
   const credentials = {
     id: new mongoose.Types.ObjectId().toHexString(),
-    email: 'test@test.com',
+    username: 'test',
   };
 
-  const token = jwt.sign(credentials, process.env.JWT_KEY!);
-  const session = { jwt: token };
-  const base64 = Buffer.from(JSON.stringify(session)).toString('base64');
-  return [`express:sess=${base64}`];
+  const token = jwt.sign(credentials, keys.JWTSecretKey);
+  const payload = { jwt: token };
+  const base64 = Buffer.from(JSON.stringify(payload)).toString('base64');
+  return [`jwt=${token}`];
 };
-function beforeAll(arg0: () => void) {
-  throw new Error('Function not implemented.');
-}
 
-function beforeEach(arg0: () => Promise<void>) {
-  throw new Error('Function not implemented.');
-}
+global.signup = async (role?: string, name?: string) => {
+  const response = await request(app)
+    .post('/api/v1/users/auth/signup')
+    .send({
+      username: name || 'test',
+      password: 'password',
+      confirmPassword: 'password',
+      role: role || 'buyer',
+    });
 
-function afterAll(arg0: () => Promise<void>) {
-  throw new Error('Function not implemented.');
-}
+  return [`jwt=${response.body.access_token}`];
+};

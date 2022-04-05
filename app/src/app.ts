@@ -10,12 +10,22 @@ import compression from 'compression';
 import { adminRouter } from './admin.routes';
 import { apiRouter } from './api.routes';
 import { errorHandler } from '../engine/middlewares/error-handler';
+import { UserDoc } from './domains/users/models/user.models';
+
+declare global {
+  namespace Express {
+    interface Request {
+      user: UserDoc;
+    }
+  }
+}
 
 const app = express();
 const xss = require('xss-clean');
 
 app.set('trust proxy', true);
 app.use(express.json({ limit: '10kb' }));
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
 
 app.use(helmet());
 if (process.env.NODE_ENV !== 'production') {
@@ -27,6 +37,7 @@ const limiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   message: 'Too many requests from this API, please try again in an hour',
 });
+app.use('/api', limiter);
 app.use(cookieParser());
 
 // Data sanitization against XSS

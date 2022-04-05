@@ -1,4 +1,4 @@
-class APIFeatures {
+export class APIFeatures {
   constructor(public query: any, public queryObj: any) {}
 
   filter() {
@@ -15,6 +15,11 @@ class APIFeatures {
       this.query = this.query.find(JSON.parse(queryStr));
     }
 
+    return this;
+  }
+
+  population(populationOptions: any) {
+    this.query = this.query.populate(populationOptions);
     return this;
   }
 
@@ -55,5 +60,3 @@ class APIFeatures {
     return this;
   }
 }
-
-module.exports = APIFeatures;

@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { keys } from '../config/keys';
 import { AppError } from '../engine/errors/app-error';
 import { app } from './app';
 
@@ -14,7 +15,7 @@ const start = async () => {
     console.log(`app running on port ${PORT}`);
   });
 
-  if (!process.env.MONGO_URI) {
+  if (!keys.mongoUri) {
     throw new AppError('mongo uri is invalid');
   }
 
@@ -26,8 +27,7 @@ const start = async () => {
     });
   });
 
-  //TODO
-  await mongoose.connect(process.env.MONGO_URI, {
+  await mongoose.connect(keys.mongoUri, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     useCreateIndex: true,
